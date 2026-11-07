@@ -106,3 +106,6 @@ Data setelah POST berisi tiga produk, termasuk Penggaris (ID 3):
 Hasil `GET /products` setelah penambahan juga menunjukkan ketiga produk:
 
 ![Bukti GET setelah penambahan produk](assets/GET-products%20ID%201%202%203.png)
+
+## Link Repository GitHub
+https://github.com/queenta-wijaya/Pemweb-Week-9-10-004
