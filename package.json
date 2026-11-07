@@ -1,0 +1,22 @@
+{
+  "name": "express-products-api",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Latihan REST API produk menggunakan Express.js",
+  "main": "server.js",
+  "scripts": {
+    "dev": "node --watch server.js",
+    "start": "node server.js",
+    "db:migrate": "prisma migrate dev",
+    "db:seed": "node prisma/seed.js",
+    "pretest": "prisma migrate deploy && npm run db:seed",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.19.3",
+    "express": "^5.3.0"
+  },
+  "devDependencies": {
+    "prisma": "^6.19.3"
+  }
+}
