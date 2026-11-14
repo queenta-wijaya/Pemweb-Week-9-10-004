@@ -1,14 +1,4 @@
-# REST API Produk
-
-Proyek ini adalah REST API sederhana untuk mengelola data produk menggunakan
-Express.js, Prisma ORM, dan SQLite. Pengujian endpoint dapat dilakukan dengan
-Postman, Bruno, Hoppscotch, atau `npm test`.
-
-## Teknologi
-
-- Node.js dan Express.js
-- Prisma ORM
-- SQLite (`dev.db`)
+# Pemweb-Tugas-Kelas-004
 
 ## Persiapan dan menjalankan aplikasi
 
@@ -77,7 +67,7 @@ npm test
 Perintah ini menerapkan migrasi, mengisi data awal, lalu menjalankan pengujian
 endpoint menggunakan Node.js test runner.
 
-## Laporan bukti pengujian
+# Laporan bukti pengujian (Week 9 dan 10)
 
 Screenshot berikut diambil menggunakan Postman. Simpan bukti tambahan di folder
 `assets/` dan cantumkan di bagian ini jika skenario pengujian baru sudah
@@ -126,4 +116,4 @@ Hasil `GET /products` setelah penambahan juga menunjukkan ketiga produk:
 ![Bukti GET setelah penambahan produk](assets/GET-products%20ID%201%202%203.png)
 
 ## Link Repository GitHub
-https://github.com/queenta-wijaya/Pemweb-Week-9-10-004
+https://github.com/queenta-wijaya/Pemweb-Tugas-Kelas-004
