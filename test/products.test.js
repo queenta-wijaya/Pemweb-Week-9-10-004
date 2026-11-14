@@ -90,6 +90,12 @@ test('CRUD produk tersimpan melalui Prisma', async (t) => {
       name: 'Penggaris Besi',
       price: 4500
     });
+
+    const detailResponse = await fetch(`${baseUrl}/products/${createdProductId}`);
+    const detailBody = await detailResponse.json();
+
+    assert.equal(detailResponse.status, 200);
+    assert.deepEqual(detailBody.data, body.data);
   });
 
   await t.test('PUT /products/:id menolak body tidak valid', async () => {

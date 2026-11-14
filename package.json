@@ -9,7 +9,7 @@
     "start": "node server.js",
     "db:migrate": "prisma migrate dev",
     "db:seed": "node prisma/seed.js",
-    "pretest": "prisma migrate deploy && npm run db:seed",
+    "pretest": "prisma generate && prisma migrate deploy && npm run db:seed",
     "test": "node --test"
   },
   "dependencies": {
