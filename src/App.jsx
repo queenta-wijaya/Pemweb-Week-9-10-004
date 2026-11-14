@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import AddProductModal from './components/AddProductModal.jsx';
+import ProductFormModal from './components/ProductFormModal.jsx';
 import ProductCard from './components/ProductCard.jsx';
 
 function App() {
@@ -9,6 +9,7 @@ function App() {
   const [loadError, setLoadError] = useState('');
   const [reloadKey, setReloadKey] = useState(0);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
 
@@ -91,6 +92,40 @@ function App() {
     }
   }
 
+  async function handleUpdateProduct(productId, productInput) {
+    setIsSubmitting(true);
+    setSubmitError('');
+
+    try {
+      const response = await fetch(`/products/${productId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(productInput)
+      });
+      const result = await response.json();
+
+      if (!response.ok || result.status !== 'success' || !result.data) {
+        throw new Error(result.message || 'Produk gagal diperbarui.');
+      }
+
+      setProducts((currentProducts) =>
+        currentProducts.map((product) =>
+          product.id === productId ? result.data : product
+        )
+      );
+      setEditingProduct(null);
+    } catch (error) {
+      console.error('Gagal memperbarui produk:', error);
+      setSubmitError(
+        error instanceof Error
+          ? error.message
+          : 'Terjadi kesalahan saat memperbarui produk.'
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
   return (
     <main className="page">
       <header className="page-header">
@@ -118,6 +153,7 @@ function App() {
               type="button"
               onClick={() => {
                 setSubmitError('');
+                setEditingProduct(null);
                 setIsAddModalOpen(true);
               }}
             >
@@ -162,22 +198,37 @@ function App() {
         ) : (
           <div className="product-grid">
             {filteredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
+              <ProductCard
+                key={product.id}
+                product={product}
+                onEdit={(selectedProduct) => {
+                  setSubmitError('');
+                  setIsAddModalOpen(false);
+                  setEditingProduct(selectedProduct);
+                }}
+              />
             ))}
           </div>
         )}
       </section>
 
-      {isAddModalOpen && (
-        <AddProductModal
+      {(isAddModalOpen || editingProduct) && (
+        <ProductFormModal
+          key={editingProduct ? `edit-${editingProduct.id}` : 'create'}
+          product={editingProduct}
           isSubmitting={isSubmitting}
           submitError={submitError}
           onClose={() => {
             if (!isSubmitting) {
               setIsAddModalOpen(false);
+              setEditingProduct(null);
             }
           }}
-          onSubmit={handleCreateProduct}
+          onSubmit={(productInput) =>
+            editingProduct
+              ? handleUpdateProduct(editingProduct.id, productInput)
+              : handleCreateProduct(productInput)
+          }
         />
       )}
     </main>
