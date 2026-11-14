@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import AddProductModal from './components/AddProductModal.jsx';
 import ProductCard from './components/ProductCard.jsx';
 
 function App() {
@@ -7,6 +8,9 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState('');
   const [reloadKey, setReloadKey] = useState(0);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
 
   useEffect(() => {
     let isActive = true;
@@ -54,6 +58,39 @@ function App() {
     product.name.toLocaleLowerCase('id-ID').includes(normalizedSearch)
   );
 
+  async function handleCreateProduct(productInput) {
+    setIsSubmitting(true);
+    setSubmitError('');
+
+    try {
+      const response = await fetch('/products', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(productInput)
+      });
+      const result = await response.json();
+
+      if (!response.ok || result.status !== 'success' || !result.data) {
+        throw new Error(result.message || 'Produk gagal ditambahkan.');
+      }
+
+      setProducts((currentProducts) =>
+        [...currentProducts, result.data].sort((a, b) => a.id - b.id)
+      );
+      setSearchTerm('');
+      setIsAddModalOpen(false);
+    } catch (error) {
+      console.error('Gagal menambahkan produk:', error);
+      setSubmitError(
+        error instanceof Error
+          ? error.message
+          : 'Terjadi kesalahan saat menambahkan produk.'
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
   return (
     <main className="page">
       <header className="page-header">
@@ -70,11 +107,23 @@ function App() {
             <h2 id="products-heading">Daftar Produk</h2>
             <p>Kelola daftar produk dan harga dalam satu tempat.</p>
           </div>
-          {!isLoading && !loadError && (
-            <span className="product-count">
-              {filteredProducts.length} dari {products.length} produk
-            </span>
-          )}
+          <div className="section-actions">
+            {!isLoading && !loadError && (
+              <span className="product-count">
+                {filteredProducts.length} dari {products.length} produk
+              </span>
+            )}
+            <button
+              className="primary-button add-button"
+              type="button"
+              onClick={() => {
+                setSubmitError('');
+                setIsAddModalOpen(true);
+              }}
+            >
+              + Tambah Produk
+            </button>
+          </div>
         </div>
 
         <label className="visually-hidden" htmlFor="product-search">
@@ -118,6 +167,19 @@ function App() {
           </div>
         )}
       </section>
+
+      {isAddModalOpen && (
+        <AddProductModal
+          isSubmitting={isSubmitting}
+          submitError={submitError}
+          onClose={() => {
+            if (!isSubmitting) {
+              setIsAddModalOpen(false);
+            }
+          }}
+          onSubmit={handleCreateProduct}
+        />
+      )}
     </main>
   );
 }
