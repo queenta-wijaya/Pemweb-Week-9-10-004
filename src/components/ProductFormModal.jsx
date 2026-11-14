@@ -1,8 +1,14 @@
 import { useState } from 'react';
 
-function AddProductModal({ isSubmitting, submitError, onClose, onSubmit }) {
-  const [name, setName] = useState('');
-  const [price, setPrice] = useState('');
+function ProductFormModal({
+  product,
+  isSubmitting,
+  submitError,
+  onClose,
+  onSubmit
+}) {
+  const [name, setName] = useState(product ? product.name : '');
+  const [price, setPrice] = useState(product ? String(product.price) : '');
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -23,12 +29,18 @@ function AddProductModal({ isSubmitting, submitError, onClose, onSubmit }) {
         className="product-modal"
         role="dialog"
         aria-modal="true"
-        aria-labelledby="add-product-title"
+        aria-labelledby="product-form-title"
       >
         <header className="modal-header">
           <div>
-            <h2 id="add-product-title">Tambah Produk</h2>
-            <p>Masukkan informasi produk baru.</p>
+            <h2 id="product-form-title">
+              {product ? 'Edit Produk' : 'Tambah Produk'}
+            </h2>
+            <p>
+              {product
+                ? 'Perbarui informasi produk yang dipilih.'
+                : 'Masukkan informasi produk baru.'}
+            </p>
           </div>
           <button
             className="icon-button"
@@ -90,7 +102,11 @@ function AddProductModal({ isSubmitting, submitError, onClose, onSubmit }) {
               type="submit"
               disabled={isSubmitting}
             >
-              {isSubmitting ? 'Menyimpan...' : 'Simpan Produk'}
+              {isSubmitting
+                ? 'Menyimpan...'
+                : product
+                  ? 'Simpan Perubahan'
+                  : 'Simpan Produk'}
             </button>
           </div>
         </form>
@@ -99,4 +115,4 @@ function AddProductModal({ isSubmitting, submitError, onClose, onSubmit }) {
   );
 }
 
-export default AddProductModal;
+export default ProductFormModal;
