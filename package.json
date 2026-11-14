@@ -6,6 +6,8 @@
   "main": "server.js",
   "scripts": {
     "dev": "node --watch server.js",
+    "dev:client": "vite",
+    "build:client": "vite build",
     "start": "node server.js",
     "db:migrate": "prisma migrate dev",
     "db:seed": "node prisma/seed.js",
@@ -14,9 +16,13 @@
   },
   "dependencies": {
     "@prisma/client": "^6.19.3",
-    "express": "^5.3.0"
+    "express": "^5.3.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
   },
   "devDependencies": {
-    "prisma": "^6.19.3"
+    "@vitejs/plugin-react": "^6.3.0",
+    "prisma": "^6.19.3",
+    "vite": "^8.3.8"
   }
 }

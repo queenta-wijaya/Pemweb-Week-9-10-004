@@ -28,6 +28,21 @@ Server berjalan di `http://localhost:3000`. Data awal:
 | 1 | Buku | 15000 |
 | 2 | Pulpen | 5000 |
 
+## Menjalankan antarmuka React
+
+Jalankan API dengan `npm run dev`, lalu buka terminal lain dan jalankan:
+
+```bash
+npm run dev:client
+```
+
+Buka `http://localhost:5173`. Vite meneruskan permintaan `/products` ke API
+Express di `http://localhost:3000`. Untuk memeriksa hasil build frontend:
+
+```bash
+npm run build:client
+```
+
 ## Endpoint API
 
 Semua endpoint menggunakan base URL `http://localhost:3000`.
