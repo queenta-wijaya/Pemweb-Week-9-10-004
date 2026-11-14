@@ -90,7 +90,10 @@ async function createProduct(req, res, next) {
   }
 
   try {
-    const newProduct = await prisma.product.create({ data: product });
+    const newProduct = await prisma.$transaction(async (transaction) => {
+      await transaction.$executeRaw`UPDATE sqlite_sequence SET seq = (SELECT COALESCE(MAX(id), 0) FROM "Product") WHERE name = 'Product'`;
+      return transaction.product.create({ data: product });
+    });
 
     return res.status(201).json({
       status: 'success',

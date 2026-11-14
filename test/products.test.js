@@ -62,6 +62,12 @@ test('CRUD produk tersimpan melalui Prisma', async (t) => {
   });
 
   await t.test('POST /products membuat produk dan mengembalikan status 201', async () => {
+    const existingProducts = await prisma.product.findMany({
+      select: { id: true }
+    });
+    const nextId = Math.max(0, ...existingProducts.map((product) => product.id)) + 1;
+    await prisma.$executeRaw`UPDATE sqlite_sequence SET seq = ${nextId + 10} WHERE name = 'Product'`;
+
     const response = await fetch(`${baseUrl}/products`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -72,7 +78,7 @@ test('CRUD produk tersimpan melalui Prisma', async (t) => {
     assert.equal(response.status, 201);
     assert.equal(body.data.name, 'Penggaris');
     assert.equal(body.data.price, 3000);
-    assert.ok(Number.isInteger(body.data.id));
+    assert.equal(body.data.id, nextId);
     createdProductId = body.data.id;
   });
 
@@ -131,6 +137,27 @@ test('CRUD produk tersimpan melalui Prisma', async (t) => {
 
     const detailResponse = await fetch(`${baseUrl}/products/${createdProductId}`);
     assert.equal(detailResponse.status, 404);
+  });
+
+  await t.test('POST menggunakan ulang ID setelah produk tertinggi dihapus', async () => {
+    const existingProducts = await prisma.product.findMany({
+      select: { id: true }
+    });
+    const nextId = Math.max(0, ...existingProducts.map((product) => product.id)) + 1;
+    const response = await fetch(`${baseUrl}/products`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: 'Produk Uji ID', price: 1000 })
+    });
+    const body = await response.json();
+
+    assert.equal(response.status, 201);
+    assert.equal(body.data.id, nextId);
+
+    const deleteResponse = await fetch(`${baseUrl}/products/${body.data.id}`, {
+      method: 'DELETE'
+    });
+    assert.equal(deleteResponse.status, 200);
   });
 
   await t.test('DELETE /products/:id mengembalikan 404 untuk ID yang tidak ada', async () => {

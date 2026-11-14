@@ -65,6 +65,9 @@ harga berupa angka lebih dari 0:
 }
 ```
 
+ID produk baru mengikuti ID terbesar yang masih ada ditambah satu. Jika produk
+dengan ID tertinggi dihapus, ID berikutnya dapat digunakan kembali.
+
 ## Menjalankan pengujian otomatis
 
 ```bash

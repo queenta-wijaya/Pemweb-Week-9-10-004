@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import ProductFormModal from './components/ProductFormModal.jsx';
+import DeleteProductModal from './components/DeleteProductModal.jsx';
 import ProductCard from './components/ProductCard.jsx';
 
 function App() {
@@ -12,6 +13,9 @@ function App() {
   const [editingProduct, setEditingProduct] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
+  const [deletingProduct, setDeletingProduct] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState('');
 
   useEffect(() => {
     let isActive = true;
@@ -126,6 +130,36 @@ function App() {
     }
   }
 
+  async function handleDeleteProduct(productId) {
+    setIsDeleting(true);
+    setDeleteError('');
+
+    try {
+      const response = await fetch(`/products/${productId}`, {
+        method: 'DELETE'
+      });
+      const result = await response.json();
+
+      if (!response.ok || result.status !== 'success') {
+        throw new Error(result.message || 'Produk gagal dihapus.');
+      }
+
+      setProducts((currentProducts) =>
+        currentProducts.filter((product) => product.id !== productId)
+      );
+      setDeletingProduct(null);
+    } catch (error) {
+      console.error('Gagal menghapus produk:', error);
+      setDeleteError(
+        error instanceof Error
+          ? error.message
+          : 'Terjadi kesalahan saat menghapus produk.'
+      );
+    } finally {
+      setIsDeleting(false);
+    }
+  }
+
   return (
     <main className="page">
       <header className="page-header">
@@ -203,8 +237,16 @@ function App() {
                 product={product}
                 onEdit={(selectedProduct) => {
                   setSubmitError('');
+                  setDeleteError('');
                   setIsAddModalOpen(false);
+                  setDeletingProduct(null);
                   setEditingProduct(selectedProduct);
+                }}
+                onDelete={(selectedProduct) => {
+                  setDeleteError('');
+                  setIsAddModalOpen(false);
+                  setEditingProduct(null);
+                  setDeletingProduct(selectedProduct);
                 }}
               />
             ))}
@@ -229,6 +271,20 @@ function App() {
               ? handleUpdateProduct(editingProduct.id, productInput)
               : handleCreateProduct(productInput)
           }
+        />
+      )}
+
+      {deletingProduct && (
+        <DeleteProductModal
+          product={deletingProduct}
+          isDeleting={isDeleting}
+          deleteError={deleteError}
+          onClose={() => {
+            if (!isDeleting) {
+              setDeletingProduct(null);
+            }
+          }}
+          onConfirm={() => handleDeleteProduct(deletingProduct.id)}
         />
       )}
     </main>

@@ -4,7 +4,7 @@ const rupiahFormatter = new Intl.NumberFormat('id-ID', {
   maximumFractionDigits: 0
 });
 
-function ProductCard({ product, onEdit }) {
+function ProductCard({ product, onEdit, onDelete }) {
   return (
     <article className="product-card">
       <span className="product-id">ID: {product.id}</span>
@@ -17,6 +17,13 @@ function ProductCard({ product, onEdit }) {
           onClick={() => onEdit(product)}
         >
           Edit
+        </button>
+        <button
+          className="delete-button"
+          type="button"
+          onClick={() => onDelete(product)}
+        >
+          Hapus
         </button>
       </div>
     </article>
